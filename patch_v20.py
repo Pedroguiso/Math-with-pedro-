@@ -10,8 +10,8 @@ WA_ICON = '''<svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path d
 p = root/'pt/index.html'
 x = p.read_text(encoding='utf-8')
 # Remove internal offer-positioning copy that should not be customer-facing.
-x = re.sub(r'<h2[^>]*>\\s*Um plano principal\\. Uma opção avulsa\\.\\s*</h2>', '', x, flags=re.I)
-x = re.sub(r'<p[^>]*>\\s*O Plano SAT Math de 4 semanas é a principal oferta\\. A aula avulsa continua disponível para quem precisa de ajuda pontual\\.\\s*</p>', '', x, flags=re.I)
+x = re.sub(r'<h2[^>]*>\s*Um plano principal\. Uma opção avulsa\.\s*</h2>', '', x, flags=re.I)
+x = re.sub(r'<p[^>]*>\s*O Plano SAT Math de 4 semanas é a principal oferta\. A aula avulsa continua disponível para quem precisa de ajuda pontual\.\s*</p>', '', x, flags=re.I)
 old = '<a class="login-link" href="login.html">Área do Aluno</a><a class="button button-small button-contact-top" href="#contact">Contato</a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 new = f'<a class="login-link" href="login.html">Área do Aluno</a><a class="wa-top-button" href="{PT_WA}" target="_blank" rel="noopener" aria-label="Falar com Pedro no WhatsApp">{WA_ICON}<span>WhatsApp</span></a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 x = x.replace(old, new)
@@ -47,7 +47,8 @@ append = r'''
 
 /* V20: prominent WhatsApp + balanced contact layout */
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.wa-icon{width:20px;height:20px;display:block;fill:currentColor;flex:0 0 auto}
+.wa-icon{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;display:block!important;fill:currentColor;flex:0 0 20px!important}
+.contact-whatsapp-card svg.wa-icon{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important}
 .wa-top-button{display:inline-flex;align-items:center;gap:8px;background:#1f9d55;color:#fff;text-decoration:none;font-weight:800;border-radius:999px;padding:10px 15px;box-shadow:0 8px 20px rgba(31,157,85,.22);transition:transform .18s ease,box-shadow .18s ease}
 .wa-top-button:hover{transform:translateY(-1px);box-shadow:0 11px 25px rgba(31,157,85,.28)}
 .mobile-wa-button{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;background:#1f9d55!important;color:#fff!important;border-radius:12px!important;padding:12px 14px!important;font-weight:800!important;margin:4px 0!important}
