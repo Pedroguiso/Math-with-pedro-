@@ -1,10 +1,17 @@
 echo "[build_env] loaded"
 
 python() {
+  if [ "${MWP_PYTHON_WRAPPER_ACTIVE:-0}" = "1" ]; then
+    command python "$@"
+    return $?
+  fi
+
   if [ "$1" = "-m" ] && [ "$2" = "zipfile" ] && [ "$3" = "-e" ]; then
     echo "[build_env] intercepting ZIP extraction"
+    export MWP_PYTHON_WRAPPER_ACTIVE=1
     command python "$@"
     status=$?
+    unset MWP_PYTHON_WRAPPER_ACTIVE
     if [ $status -ne 0 ]; then
       return $status
     fi
@@ -29,6 +36,7 @@ checks = {
     "pt_whatsapp_cards": pt.count('class="contact-method contact-whatsapp-card"'),
     "en_whatsapp_cards": en.count('class="contact-method contact-whatsapp-card"'),
     "wa_png_refs_pt": pt.count("/static/whatsapp-green.png"),
+    "pt_whatsapp_floats": pt.count('class="whatsapp-float"'),
     "v20_css_markers": css.count("V20: prominent WhatsApp + balanced contact layout"),
 }
 print("[build_env] validation:", checks)
@@ -37,7 +45,8 @@ assert checks["pt_contact_sections"] == 1, checks
 assert checks["en_contact_sections"] == 1, checks
 assert checks["pt_whatsapp_cards"] >= 1, checks
 assert checks["en_whatsapp_cards"] >= 1, checks
-assert checks["wa_png_refs_pt"] >= 1, checks
+assert checks["wa_png_refs_pt"] == 4, checks
+assert checks["pt_whatsapp_floats"] == 1, checks
 assert checks["v20_css_markers"] == 1, checks
 PY
     validation_status=$?
