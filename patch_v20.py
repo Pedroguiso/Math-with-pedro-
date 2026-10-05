@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 root = Path('site/math-with-pedro-deploy-v17')
 PT_WA = 'https://wa.me/14075802652?text=Oi%20Pedro%21%20Tenho%20interesse%20nas%20aulas%20de%20SAT%20Math%20e%20gostaria%20de%20tirar%20uma%20d%C3%BAvida.'
@@ -8,6 +9,9 @@ WA_ICON = '''<svg class="wa-icon" viewBox="0 0 24 24" aria-hidden="true"><path d
 # Portuguese: make WhatsApp a primary header contact action.
 p = root/'pt/index.html'
 x = p.read_text(encoding='utf-8')
+# Remove internal offer-positioning copy that should not be customer-facing.
+x = re.sub(r'<h2[^>]*>\\s*Um plano principal\\. Uma opção avulsa\\.\\s*</h2>', '', x, flags=re.I)
+x = re.sub(r'<p[^>]*>\\s*O Plano SAT Math de 4 semanas é a principal oferta\\. A aula avulsa continua disponível para quem precisa de ajuda pontual\\.\\s*</p>', '', x, flags=re.I)
 old = '<a class="login-link" href="login.html">Área do Aluno</a><a class="button button-small button-contact-top" href="#contact">Contato</a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 new = f'<a class="login-link" href="login.html">Área do Aluno</a><a class="wa-top-button" href="{PT_WA}" target="_blank" rel="noopener" aria-label="Falar com Pedro no WhatsApp">{WA_ICON}<span>WhatsApp</span></a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 x = x.replace(old, new)
