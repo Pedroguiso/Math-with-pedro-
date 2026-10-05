@@ -14,8 +14,8 @@ p = root/'pt/index.html'
 x = p.read_text(encoding='utf-8')
 
 # Remove internal offer-positioning copy that should not be customer-facing.
-x = re.sub(r'<h2[^>]*>\\s*Um plano principal\\. Uma opção avulsa\\.\\s*</h2>', '', x, flags=re.I)
-x = re.sub(r'<p[^>]*>\\s*O Plano SAT Math de 4 semanas é a principal oferta\\. A aula avulsa continua disponível para quem precisa de ajuda pontual\\.\\s*</p>', '', x, flags=re.I)
+x = re.sub(r'<h2[^>]*>\s*Um plano principal\. Uma opção avulsa\.\s*</h2>', '', x, flags=re.I)
+x = re.sub(r'<p[^>]*>\s*O Plano SAT Math de 4 semanas é a principal oferta\. A aula avulsa continua disponível para quem precisa de ajuda pontual\.\s*</p>', '', x, flags=re.I)
 
 # Header WhatsApp.
 old = '<a class="login-link" href="login.html">Área do Aluno</a><a class="button button-small button-contact-top" href="#contact">Contato</a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
@@ -33,17 +33,17 @@ new = f'<a class="whatsapp-float" href="{PT_WA}" target="_blank" rel="noopener" 
 x = x.replace(old, new)
 
 # Rebuild the contact section from scratch so old/duplicate markup cannot survive.
-x = re.sub(r'\\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
+x = re.sub(r'\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
 pt_contact = f'''<section class="section contact-section contact-section-pt" id="contact"><div class="shell contact-card"><div class="contact-copy"><div class="kicker">CONTATO</div><h2>Quer falar comigo antes de agendar?</h2><p>Pode me chamar diretamente para tirar dúvidas sobre SAT Math, a aula experimental gratuita ou o plano de 4 semanas.</p></div><div class="contact-actions"><a class="contact-method contact-whatsapp-card" href="{PT_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><span class="contact-text"><small>WHATSAPP</small><strong>Falar com Pedro</strong></span></a><a class="contact-method" href="mailto:mathwithpedro@gmail.com"><span class="contact-text"><small>E-MAIL</small><strong>mathwithpedro@gmail.com</strong></span></a><a class="contact-method" href="tel:+14075802652"><span class="contact-text"><small>TELEFONE / SMS</small><strong>(407) 580-2652</strong></span></a></div></div></section>'''
-x = x.replace('<section class="final-cta final-cta-v5"', pt_contact + '\\n<section class="final-cta final-cta-v5"', 1)
+x = x.replace('<section class="final-cta final-cta-v5"', pt_contact + '\n<section class="final-cta final-cta-v5"', 1)
 p.write_text(x, encoding='utf-8')
 
 # English: same clean, responsive contact layout.
 p = root/'index.html'
 x = p.read_text(encoding='utf-8')
-x = re.sub(r'\\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
+x = re.sub(r'\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
 en_contact = f'''<section class="section contact-section" id="contact"><div class="shell contact-card"><div class="contact-copy"><div class="kicker">CONTACT</div><h2>Questions before booking?</h2><p>Reach out directly. I’m happy to answer questions about SAT Math, the free first session, or whether the 4-week plan is a good fit.</p></div><div class="contact-actions"><a class="contact-method contact-whatsapp-card" href="{EN_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><span class="contact-text"><small>WHATSAPP</small><strong>Message Pedro</strong></span></a><a class="contact-method" href="mailto:mathwithpedro@gmail.com"><span class="contact-text"><small>EMAIL</small><strong>mathwithpedro@gmail.com</strong></span></a><a class="contact-method" href="tel:+14075802652"><span class="contact-text"><small>PHONE / TEXT</small><strong>(407) 580-2652</strong></span></a></div></div></section>'''
-x = x.replace('<section class="final-cta final-cta-v5"', en_contact + '\\n<section class="final-cta final-cta-v5"', 1)
+x = x.replace('<section class="final-cta final-cta-v5"', en_contact + '\n<section class="final-cta final-cta-v5"', 1)
 p.write_text(x, encoding='utf-8')
 
 # Visual cleanup for contact section and WhatsApp controls.
