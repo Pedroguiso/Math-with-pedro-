@@ -144,3 +144,16 @@ img.wa-icon,.wa-icon{
 if 'V20: prominent WhatsApp' not in c:
     c += append
 css.write_text(c, encoding='utf-8')
+
+
+# Force browsers to fetch the current stylesheet after this layout fix.
+V20_CACHE_BUSTER = "20261005-2204"
+for rel in ("index.html", "pt/index.html"):
+    page = root / rel
+    html = page.read_text(encoding="utf-8")
+    html = re.sub(
+        r'href="([^"]*site\.css)(?:\?[^"]*)?"',
+        lambda m: f'href="{m.group(1)}?v={V20_CACHE_BUSTER}"',
+        html,
+    )
+    page.write_text(html, encoding="utf-8")
