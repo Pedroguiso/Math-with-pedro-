@@ -12,35 +12,38 @@ WA_ICON = '''<img class="wa-icon" src="/static/whatsapp-green.png" alt="" aria-h
 # Portuguese: make WhatsApp a primary header contact action.
 p = root/'pt/index.html'
 x = p.read_text(encoding='utf-8')
+
 # Remove internal offer-positioning copy that should not be customer-facing.
-x = re.sub(r'<h2[^>]*>\s*Um plano principal\. Uma opção avulsa\.\s*</h2>', '', x, flags=re.I)
-x = re.sub(r'<p[^>]*>\s*O Plano SAT Math de 4 semanas é a principal oferta\. A aula avulsa continua disponível para quem precisa de ajuda pontual\.\s*</p>', '', x, flags=re.I)
+x = re.sub(r'<h2[^>]*>\\s*Um plano principal\\. Uma opção avulsa\\.\\s*</h2>', '', x, flags=re.I)
+x = re.sub(r'<p[^>]*>\\s*O Plano SAT Math de 4 semanas é a principal oferta\\. A aula avulsa continua disponível para quem precisa de ajuda pontual\\.\\s*</p>', '', x, flags=re.I)
+
+# Header WhatsApp.
 old = '<a class="login-link" href="login.html">Área do Aluno</a><a class="button button-small button-contact-top" href="#contact">Contato</a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 new = f'<a class="login-link" href="login.html">Área do Aluno</a><a class="wa-top-button" href="{PT_WA}" target="_blank" rel="noopener" aria-label="Falar com Pedro no WhatsApp">{WA_ICON}<span>WhatsApp</span></a><a class="button button-small" href="apply.html">Agendar Aula Grátis</a>'
 x = x.replace(old, new)
 
-# Upgrade the Portuguese mobile menu WhatsApp item to a real green button.
+# Mobile-menu WhatsApp.
 old = f'<a href="{PT_WA}" target="_blank" rel="noopener">WhatsApp</a>'
 new = f'<a class="mobile-wa-button" href="{PT_WA}" target="_blank" rel="noopener">{WA_ICON}<span>WhatsApp</span></a>'
 x = x.replace(old, new)
 
-# Floating action becomes icon-first rather than a text pill.
+# Floating action.
 old = f'<a class="whatsapp-float" href="{PT_WA}" target="_blank" rel="noopener" aria-label="Falar com Pedro no WhatsApp">WhatsApp</a>'
 new = f'<a class="whatsapp-float" href="{PT_WA}" target="_blank" rel="noopener" aria-label="Falar com Pedro no WhatsApp" title="WhatsApp">{WA_ICON}<span class="sr-only">WhatsApp</span></a>'
 x = x.replace(old, new)
 
-# Make WhatsApp contact tile consistent with the other contact tiles.
-old = f'<a class="button contact-whatsapp" href="{PT_WA}" target="_blank" rel="noopener">Falar com Pedro no WhatsApp</a>'
-new = f'<a class="contact-method contact-whatsapp-card" href="{PT_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><small>WHATSAPP</small><strong>Falar com Pedro</strong></a>'
-x = x.replace(old, new)
+# Rebuild the contact section from scratch so old/duplicate markup cannot survive.
+x = re.sub(r'\\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
+pt_contact = f'''<section class="section contact-section contact-section-pt" id="contact"><div class="shell contact-card"><div class="contact-copy"><div class="kicker">CONTATO</div><h2>Quer falar comigo antes de agendar?</h2><p>Pode me chamar diretamente para tirar dúvidas sobre SAT Math, a aula experimental gratuita ou o plano de 4 semanas.</p></div><div class="contact-actions"><a class="contact-method contact-whatsapp-card" href="{PT_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><span class="contact-text"><small>WHATSAPP</small><strong>Falar com Pedro</strong></span></a><a class="contact-method" href="mailto:mathwithpedro@gmail.com"><span class="contact-text"><small>E-MAIL</small><strong>mathwithpedro@gmail.com</strong></span></a><a class="contact-method" href="tel:+14075802652"><span class="contact-text"><small>TELEFONE / SMS</small><strong>(407) 580-2652</strong></span></a></div></div></section>'''
+x = x.replace('<section class="final-cta final-cta-v5"', pt_contact + '\\n<section class="final-cta final-cta-v5"', 1)
 p.write_text(x, encoding='utf-8')
 
-# English contact section gets the same balanced contact tiles.
+# English: same clean, responsive contact layout.
 p = root/'index.html'
 x = p.read_text(encoding='utf-8')
-old = f'<a class="button contact-whatsapp" href="{EN_WA}" target="_blank" rel="noopener">WhatsApp Pedro</a>'
-new = f'<a class="contact-method contact-whatsapp-card" href="{EN_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><small>WHATSAPP</small><strong>Message Pedro</strong></a>'
-x = x.replace(old, new)
+x = re.sub(r'\\s*<section class="section contact-section(?: contact-section-pt)?" id="contact">.*?</section>', '', x, flags=re.I|re.S)
+en_contact = f'''<section class="section contact-section" id="contact"><div class="shell contact-card"><div class="contact-copy"><div class="kicker">CONTACT</div><h2>Questions before booking?</h2><p>Reach out directly. I’m happy to answer questions about SAT Math, the free first session, or whether the 4-week plan is a good fit.</p></div><div class="contact-actions"><a class="contact-method contact-whatsapp-card" href="{EN_WA}" target="_blank" rel="noopener"><span class="contact-icon">{WA_ICON}</span><span class="contact-text"><small>WHATSAPP</small><strong>Message Pedro</strong></span></a><a class="contact-method" href="mailto:mathwithpedro@gmail.com"><span class="contact-text"><small>EMAIL</small><strong>mathwithpedro@gmail.com</strong></span></a><a class="contact-method" href="tel:+14075802652"><span class="contact-text"><small>PHONE / TEXT</small><strong>(407) 580-2652</strong></span></a></div></div></section>'''
+x = x.replace('<section class="final-cta final-cta-v5"', en_contact + '\\n<section class="final-cta final-cta-v5"', 1)
 p.write_text(x, encoding='utf-8')
 
 # Visual cleanup for contact section and WhatsApp controls.
@@ -50,39 +53,92 @@ append = r'''
 
 /* V20: prominent WhatsApp + balanced contact layout */
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.wa-icon{width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important;max-width:20px!important;max-height:20px!important;display:block!important;object-fit:contain!important;flex:0 0 20px!important}
-.contact-whatsapp-card svg.wa-icon{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important}
-.wa-top-button{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#142d4e;text-decoration:none;font-weight:800;border:1px solid #dce4ef;border-radius:999px;padding:9px 13px;box-shadow:none;transition:transform .18s ease,border-color .18s ease}
-.wa-top-button:hover{transform:translateY(-1px);border-color:#20c66a}
-.mobile-wa-button{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;background:#fff!important;color:#142d4e!important;border:1px solid #bfe7cf!important;border-radius:12px!important;padding:12px 14px!important;font-weight:800!important;margin:4px 0!important}
-.contact-card{grid-template-columns:1fr!important;gap:26px!important;align-items:stretch!important;padding:34px!important}
-.contact-card>div:first-child{max-width:760px}
-.contact-card h2{max-width:760px}
-.contact-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;align-items:stretch!important}
-.contact-method{min-width:0;min-height:98px;justify-content:center;padding:16px 17px!important;border-radius:16px!important;box-sizing:border-box}
-.contact-method strong{font-size:.98rem!important;line-height:1.28!important;overflow-wrap:anywhere!important;word-break:break-word}
-.contact-method small{margin-top:2px}
-.contact-whatsapp-card{background:#f2fbf6!important;border-color:#bfe7cf!important;color:#176b3a!important;position:relative}
-.contact-whatsapp-card .contact-icon{position:absolute;right:14px;top:14px;display:grid;place-items:center;width:30px;height:30px;background:transparent;color:inherit}
-.contact-whatsapp-card .contact-icon .wa-icon{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;max-width:26px!important;max-height:26px!important}
-.whatsapp-float{display:grid!important;place-items:center!important;width:56px!important;height:56px!important;padding:0!important;border-radius:50%!important;background:#fff!important;border:1px solid #bfe7cf!important;color:#142d4e!important;box-shadow:0 12px 30px rgba(0,0,0,.18)!important}
-.whatsapp-float .wa-icon{width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;max-width:30px!important;max-height:30px!important}
+
+/* WhatsApp image must never inherit a global responsive-image width. */
+img.wa-icon,.wa-icon{
+  display:block!important;
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  min-height:22px!important;
+  max-width:22px!important;
+  max-height:22px!important;
+  object-fit:contain!important;
+  flex:0 0 22px!important;
+}
+
+.wa-top-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;background:#fff!important;color:#142d4e!important;text-decoration:none!important;font-weight:800!important;border:1px solid #dce4ef!important;border-radius:999px!important;padding:9px 13px!important;box-sizing:border-box!important}
+.mobile-wa-button{display:flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;background:#fff!important;color:#142d4e!important;border:1px solid #bfe7cf!important;border-radius:12px!important;padding:12px 14px!important;font-weight:800!important}
+
+.contact-section{background:#f5f8fc!important}
+.contact-card{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:24px!important;
+  align-items:start!important;
+  background:#fff!important;
+  border:1px solid rgba(20,45,78,.10)!important;
+  border-radius:22px!important;
+  padding:32px!important;
+  box-shadow:0 18px 50px rgba(20,45,78,.08)!important;
+  box-sizing:border-box!important;
+}
+.contact-copy{max-width:760px!important}
+.contact-card h2{margin:.35rem 0 .75rem!important;font-size:clamp(1.8rem,3vw,2.6rem)!important;line-height:1.08!important}
+.contact-card p{max-width:760px!important;margin:0!important;color:#526174!important}
+
+.contact-actions{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+  width:100%!important;
+  align-items:stretch!important;
+}
+.contact-method{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:11px!important;
+  min-width:0!important;
+  min-height:78px!important;
+  padding:14px 15px!important;
+  border:1px solid #dce4ef!important;
+  border-radius:14px!important;
+  background:#fbfcfe!important;
+  color:#142d4e!important;
+  text-decoration:none!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.contact-text{display:flex!important;flex-direction:column!important;gap:2px!important;min-width:0!important}
+.contact-method small{display:block!important;font-size:.70rem!important;line-height:1.1!important;letter-spacing:.08em!important;color:#758398!important;font-weight:800!important}
+.contact-method strong{display:block!important;font-size:.94rem!important;line-height:1.25!important;overflow-wrap:anywhere!important;word-break:break-word!important}
+.contact-icon{display:grid!important;place-items:center!important;width:28px!important;height:28px!important;min-width:28px!important;max-width:28px!important;flex:0 0 28px!important}
+.contact-whatsapp-card{background:#f2fbf6!important;border-color:#bfe7cf!important;color:#176b3a!important}
+.contact-whatsapp-card img.wa-icon{width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;max-width:24px!important;max-height:24px!important}
+
+.whatsapp-float{display:grid!important;place-items:center!important;width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;padding:0!important;border-radius:50%!important;background:#fff!important;border:1px solid #bfe7cf!important;box-shadow:0 10px 28px rgba(0,0,0,.18)!important}
+.whatsapp-float img.wa-icon{width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important;max-width:27px!important;max-height:27px!important}
+
 @media(max-width:1080px){
-  .wa-top-button span{display:none}
-  .wa-top-button{width:42px;height:42px;padding:0;justify-content:center}
+  .wa-top-button span{display:none!important}
+  .wa-top-button{width:42px!important;height:42px!important;padding:0!important}
 }
-@media(max-width:900px){
-  .contact-card{padding:26px!important}
-  .contact-actions{grid-template-columns:1fr!important}
-  .contact-method{min-height:78px}
+@media(max-width:820px){
   .wa-top-button{display:none!important}
+  .contact-card{padding:24px!important;border-radius:18px!important}
+  .contact-actions{grid-template-columns:1fr!important;gap:10px!important}
+  .contact-method{min-height:68px!important;padding:13px 14px!important}
 }
-@media(max-width:640px){
-  .contact-card{padding:20px!important;gap:22px!important}
-  .contact-actions{gap:10px!important}
-  .contact-method{min-height:72px;padding:14px 15px!important}
-  .contact-method strong{font-size:.95rem!important}
-  .whatsapp-float{right:16px!important;bottom:84px!important;width:54px!important;height:54px!important}
+@media(max-width:520px){
+  .contact-section{padding-top:34px!important;padding-bottom:34px!important}
+  .contact-card{padding:18px!important;gap:20px!important}
+  .contact-card h2{font-size:1.75rem!important}
+  .contact-card p{font-size:.97rem!important}
+  .contact-method{min-height:64px!important}
+  .contact-method strong{font-size:.92rem!important}
+  .whatsapp-float{right:14px!important;bottom:84px!important;width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important}
 }
 '''
 if 'V20: prominent WhatsApp' not in c:
